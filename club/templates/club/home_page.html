@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{% block content %}
+<main id="main-content">
+  <section class="hero">
+    <div class="hero__pitch" aria-hidden="true"></div>
+    <div class="container hero__inner">
+      <div class="hero__copy">
+        <p class="eyebrow"><span class="eyebrow__dot"></span>{{ page.hero_eyebrow }}</p>
+        <h1>{{ page.hero_heading }}</h1>
+        <p class="hero__lead">{{ page.hero_text }}</p>
+        <div class="hero__actions">
+          <a class="button button--light" href="/sklad/">Poznaj drużynę <span aria-hidden="true">↗</span></a>
+          <a class="text-link text-link--light" href="/historia/">Historia klubu</a>
+        </div>
+      </div>
+
+      <aside class="next-match" aria-label="Najbliższy mecz">
+        <div class="next-match__top">
+          <span class="eyebrow eyebrow--muted">NAJBLIŻSZY MECZ</span>
+          <span class="live-indicator">KALENDARZ</span>
+        </div>
+        {% if featured_fixture %}
+          <p class="match-date">{{ featured_fixture.kickoff_at|date:"l, j E" }}</p>
+          <p class="match-time">{{ featured_fixture.kickoff_at|date:"H:i" }}</p>
+          {% if featured_fixture.competition %}<p class="match-competition">{{ featured_fixture.competition }}</p>{% endif %}
+          <div class="match-versus">
+            <div class="match-team">
+              <span class="team-crest team-crest--club"><img src="{% static 'club/images/milan.svg' %}" alt=""></span>
+              <span>KS Milan</span>
+            </div>
+            <span class="versus">VS</span>
+            <div class="match-team match-team--opponent">
+              <span class="team-crest team-crest--opponent">{{ featured_fixture.opponent|slice:":2"|upper }}</span>
+              <span>{{ featured_fixture.opponent }}</span>
+            </div>
+          </div>
+          <p class="match-venue">{% if featured_fixture.is_home %}Mecz u siebie{% else %}Mecz wyjazdowy{% endif %}{% if featured_fixture.venue %} · {{ featured_fixture.venue }}{% endif %}</p>
+        {% else %}
+          <p class="match-empty-title">Kolejny mecz?</p>
+          <p class="match-empty-copy">Informacja o kolejnym spotkaniu pojawi się tutaj po ogłoszeniu terminarza.</p>
+          <a class="text-link text-link--light" href="/terminarz/">Zobacz terminarz <span aria-hidden="true">↗</span></a>
+        {% endif %}
+      </aside>
+    </div>
+    <div class="hero__bottom container">
+      <span>LOKALNY KLUB. WSPÓLNA PASJA.</span>
+      <span>01 — 04</span>
+    </div>
+  </section>
+
+  <section class="section section--intro">
+    <div class="container intro-grid">
+      <p class="eyebrow eyebrow--dark">NASZA DRUŻYNA</p>
+      <div>
+        <h2>Piłka nożna<br><span>z charakterem.</span></h2>
+        <p class="section-lead">KS Milan to ludzie, emocje i wspólne chwile na boisku. Poznaj klub i bądź częścią naszej historii.</p>
+        <a class="text-link" href="/historia/">Więcej o klubie <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="intro-mark" aria-hidden="true"><img src="{% static 'club/images/milan.svg' %}" alt=""><i></i></div>
+    </div>
+  </section>
+
+  <section class="section section--team">
+    <div class="container">
+      <div class="section-heading">
+        <div><p class="eyebrow eyebrow--dark">RAZEM NA BOISKU</p><h2>Poznaj <span>skład.</span></h2></div>
+        <a class="text-link" href="/sklad/">Cała drużyna <span aria-hidden="true">↗</span></a>
+      </div>
+      {% if players %}
+        <div class="player-grid player-grid--featured">
+          {% for player in players %}
+            <article class="player-card">
+              <div class="player-card__image">
+                {% if player.photo %}
+                  {% image player.photo fill-600x700 as player_photo %}
+                  <img src="{{ player_photo.url }}" alt="{{ player.first_name }} {{ player.last_name }}" loading="lazy">
+                {% else %}
+                  <div class="player-placeholder" aria-hidden="true"><span>{{ player.first_name|slice:":1" }}{{ player.last_name|slice:":1" }}</span></div>
+                {% endif %}
+                {% if player.shirt_number %}<span class="player-number">{{ player.shirt_number|stringformat:"02d" }}</span>{% endif %}
+              </div>
+              <div class="player-card__info"><span class="player-position">{{ player.get_position_display }}</span><h3>{{ player.first_name }}<br><strong>{{ player.last_name }}</strong></h3></div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state"><span class="empty-state__icon" aria-hidden="true">＋</span><p>Skład drużyny jest w przygotowaniu.</p><span>Wkrótce poznasz zawodników KS Milan.</span></div>
+      {% endif %}
+    </div>
+  </section>
+
+  {% if recent_results %}
+  <section class="results-band">
+    <div class="container results-band__inner">
+      <div class="results-band__heading"><p class="eyebrow eyebrow--muted">OSTATNIE WYNIKI</p><a class="text-link text-link--light" href="/terminarz/">Wszystkie mecze <span aria-hidden="true">↗</span></a></div>
+      {% for fixture in recent_results %}
+        <article class="result-row">
+          <span class="result-row__date">{{ fixture.kickoff_at|date:"d.m" }}</span>
+          <span class="result-row__teams">{% if fixture.is_home %}KS Milan <span>—</span> {{ fixture.opponent }}{% else %}{{ fixture.opponent }} <span>—</span> KS Milan{% endif %}</span>
+          <strong class="result-row__score">{% if fixture.is_home %}{{ fixture.home_score }} : {{ fixture.away_score }}{% else %}{{ fixture.away_score }} : {{ fixture.home_score }}{% endif %}</strong>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="section section--news">
+    <div class="container">
+      <div class="section-heading">
+        <div><p class="eyebrow eyebrow--dark">CO SŁYCHAĆ W KLUBIE</p><h2>Najnowsze <span>wieści.</span></h2></div>
+        <a class="text-link" href="/aktualnosci/">Wszystkie aktualności <span aria-hidden="true">↗</span></a>
+      </div>
+      {% if news %}
+        <div class="news-grid">
+          {% for article in news %}
+            <article class="news-card">
+              <a href="{{ article.url }}" class="news-card__link">
+                {% if article.cover_image %}
+                  {% image article.cover_image fill-800x520 as article_image %}
+                  <img class="news-card__image" src="{{ article_image.url }}" alt="{{ article.cover_image.title }}" loading="lazy">
+                {% else %}
+                  <div class="news-card__image news-card__image--empty" aria-hidden="true"><span>KS<br>MILAN</span></div>
+                {% endif %}
+                <div class="news-card__body"><span class="news-card__date">{{ article.publication_date|date:"j E Y" }}</span><h3>{{ article.title }}</h3><p>{{ article.excerpt }}</p><span class="news-card__more">Czytaj więcej <span aria-hidden="true">↗</span></span></div>
+              </a>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state"><span class="empty-state__icon" aria-hidden="true">✳</span><p>Nowości z klubu już wkrótce.</p><span>Zapraszamy ponownie po najświeższe informacje.</span></div>
+      {% endif %}
+    </div>
+  </section>
+</main>
+{% endblock %}

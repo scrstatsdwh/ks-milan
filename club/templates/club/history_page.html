@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block content %}
+<main id="main-content" class="page-main">
+  <section class="page-hero page-hero--compact">
+    <div class="container page-hero__inner">
+      <p class="eyebrow"><span class="eyebrow__dot"></span>OD POKOLEŃ W MILANÓWKU</p>
+      <h1>{{ page.title }}</h1>
+      {% if page.introduction %}<div class="page-hero__lead">{{ page.introduction|richtext }}</div>{% endif %}
+    </div>
+  </section>
+  <section class="section">
+    <div class="container article-layout">
+      <aside class="article-aside"><span class="eyebrow eyebrow--dark">KS MILAN</span><p>Klub. Miasto.<br>Wspólna pasja.</p></aside>
+      <article class="rich-content">
+        {% if page.story %}{{ page.story|richtext }}{% else %}<p>Historia klubu zostanie wkrótce uzupełniona. Redaktor może ją edytować w panelu CMS.</p>{% endif %}
+      </article>
+    </div>
+  </section>
+</main>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% load static wagtailcore_tags %}
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10251d">
+  <meta name="description" content="{% if page.search_description %}{{ page.search_description }}{% else %}KS Milan Milanówek — lokalny klub, wspólna pasja. Poznaj drużynę, sprawdź terminarz i aktualności.{% endif %}">
+  <title>{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %} · KS Milan</title>
+  <link rel="stylesheet" href="{% static 'club/css/site.css' %}">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Przejdź do treści</a>
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="/" aria-label="KS Milan — strona główna">
+        <img class="brand__crest" src="{% static 'club/images/milan.svg' %}" alt="">
+        <span class="brand__text"><strong>KS MILAN</strong><small>MILANÓWEK</small></span>
+      </a>
+      <nav class="site-nav" aria-label="Główna nawigacja">
+        <a href="/historia/">Klub</a>
+        <a href="/sklad/">Drużyna</a>
+        <a href="/terminarz/">Terminarz</a>
+        <a href="/aktualnosci/">Aktualności</a>
+      </nav>
+      <a class="header-cta" href="/terminarz/">Najbliższy mecz <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+  <div>
+    {% block content %}{% endblock %}
+  </div>
+  <footer class="site-footer">
+    <div class="container site-footer__top">
+      <a class="brand brand--footer" href="/" aria-label="KS Milan — strona główna">
+        <img class="brand__crest" src="{% static 'club/images/milan.svg' %}" alt="">
+        <span class="brand__text"><strong>KS MILAN</strong><small>MILANÓWEK</small></span>
+      </a>
+      <p>Lokalny klub.<br><strong>Wspólna pasja.</strong></p>
+      <nav class="footer-nav" aria-label="Nawigacja w stopce">
+        <a href="/historia/">O klubie</a><a href="/sklad/">Skład</a><a href="/terminarz/">Terminarz</a><a href="/aktualnosci/">Aktualności</a>
+      </nav>
+    </div>
+    <div class="container site-footer__bottom"><span>© {% now "Y" %} KS Milan Milanówek</span><a href="/cms/">Panel redakcyjny <span aria-hidden="true">↗</span></a></div>
+  </footer>
+</body>
+</html>

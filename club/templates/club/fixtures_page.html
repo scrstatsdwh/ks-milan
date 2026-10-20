@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags %}
+
+{% block content %}
+<main id="main-content" class="page-main">
+  <section class="page-hero page-hero--compact">
+    <div class="container page-hero__inner">
+      <p class="eyebrow"><span class="eyebrow__dot"></span>EMOCJE DO OSTATNIEGO GWIZDKA</p>
+      <h1>{{ page.title }}</h1>
+      {% if page.introduction %}<div class="page-hero__lead">{{ page.introduction|richtext }}</div>{% else %}<p class="page-hero__lead">Sprawdź, kiedy gramy i jak zakończyły się ostatnie spotkania.</p>{% endif %}
+    </div>
+  </section>
+  <section class="section">
+    <div class="container fixture-layout">
+      <div class="fixture-column">
+        <div class="section-heading section-heading--small"><div><p class="eyebrow eyebrow--dark">PRZED NAMI</p><h2>Nadchodzące <span>mecze.</span></h2></div></div>
+        {% for fixture in upcoming_fixtures %}
+          <article class="fixture-card">
+            <div class="fixture-card__date"><strong>{{ fixture.kickoff_at|date:"d" }}</strong><span>{{ fixture.kickoff_at|date:"M Y" }}</span><span>{{ fixture.kickoff_at|date:"H:i" }}</span></div>
+            <div class="fixture-card__details"><span class="fixture-card__competition">{{ fixture.competition|default:"Mecz ligowy" }}</span><h3>{% if fixture.is_home %}KS Milan <span>—</span> {{ fixture.opponent }}{% else %}{{ fixture.opponent }} <span>—</span> KS Milan{% endif %}</h3><p>{% if fixture.is_home %}U siebie{% else %}Na wyjeździe{% endif %}{% if fixture.venue %} · {{ fixture.venue }}{% endif %}</p></div>
+            <span class="fixture-card__arrow" aria-hidden="true">↗</span>
+          </article>
+        {% empty %}
+          <div class="empty-state empty-state--left"><p>Nie ma jeszcze zaplanowanych spotkań.</p><span>Informacje o kolejnych meczach pojawią się tutaj po ogłoszeniu terminarza.</span></div>
+        {% endfor %}
+      </div>
+      <div class="fixture-column">
+        <div class="section-heading section-heading--small"><div><p class="eyebrow eyebrow--dark">ZA NAMI</p><h2>Ostatnie <span>wyniki.</span></h2></div></div>
+        {% for fixture in past_fixtures %}
+          <article class="fixture-card fixture-card--result">
+            <div class="fixture-card__date"><strong>{{ fixture.kickoff_at|date:"d" }}</strong><span>{{ fixture.kickoff_at|date:"M Y" }}</span></div>
+            <div class="fixture-card__details"><span class="fixture-card__competition">{{ fixture.competition|default:"Mecz ligowy" }}</span><h3>{% if fixture.is_home %}KS Milan <span>—</span> {{ fixture.opponent }}{% else %}{{ fixture.opponent }} <span>—</span> KS Milan{% endif %}</h3></div>
+            <strong class="fixture-card__score">{% if fixture.is_home %}{{ fixture.home_score }} : {{ fixture.away_score }}{% else %}{{ fixture.away_score }} : {{ fixture.home_score }}{% endif %}</strong>
+          </article>
+        {% empty %}
+          <div class="empty-state empty-state--left"><p>Wyniki pojawią się po rozegranych meczach.</p><span>Sprawdź ponownie po najbliższym spotkaniu.</span></div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

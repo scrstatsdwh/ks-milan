@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block content %}
+<main id="main-content" class="page-main">
+  <section class="page-hero page-hero--compact">
+    <div class="container page-hero__inner">
+      <p class="eyebrow"><span class="eyebrow__dot"></span>RAZEM NA BOISKU</p>
+      <h1>{{ page.title }}</h1>
+      {% if page.introduction %}<div class="page-hero__lead">{{ page.introduction|richtext }}</div>{% else %}<p class="page-hero__lead">Poznaj zawodników, którzy tworzą naszą drużynę.</p>{% endif %}
+    </div>
+  </section>
+  <section class="section section--team">
+    <div class="container">
+      {% if players %}
+        <div class="player-grid">
+          {% for player in players %}
+            <article class="player-card">
+              <div class="player-card__image">
+                {% if player.photo %}
+                  {% image player.photo fill-600x700 as player_photo %}
+                  <img src="{{ player_photo.url }}" alt="{{ player.first_name }} {{ player.last_name }}" loading="lazy">
+                {% else %}
+                  <div class="player-placeholder" aria-hidden="true"><span>{{ player.first_name|slice:":1" }}{{ player.last_name|slice:":1" }}</span></div>
+                {% endif %}
+                {% if player.shirt_number %}<span class="player-number">{{ player.shirt_number|stringformat:"02d" }}</span>{% endif %}
+              </div>
+              <div class="player-card__info"><span class="player-position">{{ player.get_position_display }}</span><h2>{{ player.first_name }}<br><strong>{{ player.last_name }}</strong></h2></div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state"><span class="empty-state__icon" aria-hidden="true">＋</span><p>Skład jest w przygotowaniu.</p><span>Wkrótce poznasz zawodników KS Milan.</span></div>
+      {% endif %}
+    </div>
+  </section>
+</main>
+{% endblock %}
