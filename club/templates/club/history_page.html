@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags %}
+{% load static wagtailcore_tags %}
 
 {% block content %}
 <main id="main-content" class="page-main">
@@ -12,11 +12,161 @@
   </section>
   <section class="section">
     <div class="container article-layout">
-      <aside class="article-aside"><span class="eyebrow eyebrow--dark">KS MILAN</span><p>Klub. Miasto.<br>Wspólna pasja.</p></aside>
+      <aside class="article-aside">
+        <span class="eyebrow eyebrow--dark">KS MILAN</span>
+        <p class="article-aside__motto">
+          <span class="visually-hidden">Klub. Miasto. Wspólna pasja.</span>
+          <span class="article-aside__word" aria-hidden="true">
+            <span class="article-aside__letter">K</span><span class="article-aside__letter">l</span><span class="article-aside__letter">u</span><span class="article-aside__letter">b</span><span class="article-aside__letter">.</span>
+          </span>
+          <span class="article-aside__word" aria-hidden="true">
+            <span class="article-aside__letter">M</span><span class="article-aside__letter">i</span><span class="article-aside__letter">a</span><span class="article-aside__letter">s</span><span class="article-aside__letter">t</span><span class="article-aside__letter">o</span><span class="article-aside__letter">.</span>
+          </span>
+          <br>
+          <span class="article-aside__word" aria-hidden="true">
+            <span class="article-aside__letter">W</span><span class="article-aside__letter">s</span><span class="article-aside__letter">p</span><span class="article-aside__letter">ó</span><span class="article-aside__letter">l</span><span class="article-aside__letter">n</span><span class="article-aside__letter">a</span>
+          </span>
+          <span class="article-aside__word" aria-hidden="true">
+            <span class="article-aside__letter">p</span><span class="article-aside__letter">a</span><span class="article-aside__letter">s</span><span class="article-aside__letter">j</span><span class="article-aside__letter">a</span><span class="article-aside__letter">.</span>
+          </span>
+        </p>
+      </aside>
       <article class="rich-content">
-        {% if page.story %}{{ page.story|richtext }}{% else %}<p>Historia klubu zostanie wkrótce uzupełniona. Redaktor może ją edytować w panelu CMS.</p>{% endif %}
+        <div class="history-timeline" data-history-timeline>
+          <div class="history-timeline__traveler" aria-hidden="true">
+            <span class="history-timeline__ball"><img src="{% static 'club/images/milan-timeline-ball.svg' %}" alt=""></span>
+          </div>
+          <ol class="history-timeline__list" aria-label="Historia KS Milan w porządku chronologicznym">
+            <li class="history-timeline__item is-active is-passed" data-timeline-event>
+              <span class="history-timeline__date">1986</span>
+              <span class="history-timeline__node" aria-hidden="true"></span>
+              <div class="history-timeline__card"><p>Powstała drużyna piłkarska KS Milan. Zespół rozpoczął udział w Milanowskiej Lidze Szóstek Piłkarskich.</p></div>
+            </li>
+            <li class="history-timeline__item" data-timeline-event>
+              <span class="history-timeline__date">1987</span>
+              <span class="history-timeline__node" aria-hidden="true"></span>
+              <div class="history-timeline__card"><p>Młodzi piłkarze zakwalifikowali się do finałów IV Mistrzostw Polski Mini Piłki Nożnej w Zielonej Górze i zajęli 5. miejsce.</p></div>
+            </li>
+            <li class="history-timeline__item" data-timeline-event>
+              <span class="history-timeline__date">1988</span>
+              <span class="history-timeline__node" aria-hidden="true"></span>
+              <div class="history-timeline__card"><p>W turnieju w Gliwicach Milan wywalczył wicemistrzostwo Polski.</p></div>
+            </li>
+            <li class="history-timeline__item" data-timeline-event>
+              <span class="history-timeline__date">1989</span>
+              <span class="history-timeline__node" aria-hidden="true"></span>
+              <div class="history-timeline__card"><p>Zespół zajął 5. miejsce w Halowych Mistrzostwach Polski w Dębicy i w kolejnych Mistrzostwach Polski Mini Piłki Nożnej w Chrzanowie. W tym samym roku powstała drużyna 11-osobowa, zgłoszona do seniorskiej B-klasy Warszawskiego OZPN.</p></div>
+            </li>
+            <li class="history-timeline__item" data-timeline-event>
+              <span class="history-timeline__date">1991</span>
+              <span class="history-timeline__node" aria-hidden="true"></span>
+              <div class="history-timeline__card"><p>Klub doczekał się własnego boiska przy ul. Turczynek i rozszerzył działalność o dwie sekcje młodzieżowe.</p></div>
+            </li>
+            <li class="history-timeline__item" data-timeline-event>
+              <span class="history-timeline__date">Sezon 1992/93</span>
+              <span class="history-timeline__node" aria-hidden="true"></span>
+              <div class="history-timeline__card"><p>Drużyna seniorów wywalczyła awans do klasy „A”.</p></div>
+            </li>
+            <li class="history-timeline__item" data-timeline-event>
+              <span class="history-timeline__date">Kolejne lata</span>
+              <span class="history-timeline__node" aria-hidden="true"></span>
+              <div class="history-timeline__card"><p>Dzięki zaangażowaniu członków klubu i wsparciu miasta piaszczyste boisko zaczęło zmieniać się w stadion: powstały budynek klubowy, trybuny, oświetlone boisko treningowe i system nawadniania.</p></div>
+            </li>
+            <li class="history-timeline__item" data-timeline-event>
+              <span class="history-timeline__date">1994–2001</span>
+              <span class="history-timeline__node" aria-hidden="true"></span>
+              <div class="history-timeline__card"><p>Wychowanek Milanu, Piotr Dziewicki, w wieku nieco ponad 15 lat przeszedł do warszawskiej Polonii. Z tym klubem zdobył mistrzostwo Polski oraz Puchar Ligi Polskiej w sezonie 1999/2000, a rok później także Puchar Polski.</p></div>
+            </li>
+            <li class="history-timeline__item" data-timeline-event>
+              <span class="history-timeline__date">Sezon 2001/02</span>
+              <span class="history-timeline__node" aria-hidden="true"></span>
+              <div class="history-timeline__card"><p>Seniorzy awansowali do Ligi Okręgowej.</p></div>
+            </li>
+            <li class="history-timeline__item" data-timeline-event>
+              <span class="history-timeline__date">2007</span>
+              <span class="history-timeline__node" aria-hidden="true"></span>
+              <div class="history-timeline__card"><p>Po barażach z Kormoranem Łąck Milan awansował do V Mazowieckiej Ligi Seniorów.</p></div>
+            </li>
+            <li class="history-timeline__item" data-timeline-event>
+              <span class="history-timeline__date">2008</span>
+              <span class="history-timeline__node" aria-hidden="true"></span>
+              <div class="history-timeline__card"><p>Po likwidacji V ligi przez Mazowiecki Związek Piłki Nożnej zespół wrócił do Ligi Okręgowej.</p></div>
+            </li>
+            <li class="history-timeline__item" data-timeline-event>
+              <span class="history-timeline__date">Grudzień 2009</span>
+              <span class="history-timeline__node" aria-hidden="true"></span>
+              <div class="history-timeline__card"><p>Dzięki wsparciu miasta i dofinansowaniu Ministerstwa Sportu oddano do użytku pełnowymiarowe boisko ze sztuczną trawą i trybunami na 210 osób.</p></div>
+            </li>
+            <li class="history-timeline__item" data-timeline-event>
+              <span class="history-timeline__date">Kolejne lata</span>
+              <span class="history-timeline__node" aria-hidden="true"></span>
+              <div class="history-timeline__card"><p>W klubie trenowało dziewięć drużyn: od orlików i grup młodzieżowych po seniorów i Oldbojów. Młodzież wyjeżdżała na turnieje do Włoch, Niemiec, Danii i Hiszpanii.</p></div>
+            </li>
+            <li class="history-timeline__item" data-timeline-event>
+              <span class="history-timeline__date">Aktualnie</span>
+              <span class="history-timeline__node" aria-hidden="true"></span>
+              <div class="history-timeline__card"><p>Milan Milanówek ma pierwszą drużynę seniorów w Klasie A Warszawa IV oraz rezerwy grające w Klasie B Warszawa VIII.</p></div>
+            </li>
+          </ol>
+        </div>
+        {% if page.story %}
+          <details class="history-full-story">
+            <summary>Przeczytaj pełny opis historii</summary>
+            <div class="rich-content">{{ page.story|richtext }}</div>
+          </details>
+        {% endif %}
       </article>
     </div>
   </section>
 </main>
+<script>
+  (() => {
+    const timeline = document.querySelector("[data-history-timeline]");
+    if (!timeline) return;
+
+    const events = [...timeline.querySelectorAll("[data-timeline-event]")];
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const traveler = timeline.querySelector(".history-timeline__traveler");
+    let activeEvent = events[0];
+    let frame = 0;
+
+    const updateTraveler = () => {
+      frame = 0;
+      const viewportCenter = window.innerHeight / 2;
+      const timelineBounds = timeline.getBoundingClientRect();
+      if (timelineBounds.bottom < 0 || timelineBounds.top > window.innerHeight) return;
+
+      const nextEvent = events.reduce((closest, event) => {
+        const distance = Math.abs(event.getBoundingClientRect().top + event.offsetHeight / 2 - viewportCenter);
+        const closestDistance = Math.abs(closest.getBoundingClientRect().top + closest.offsetHeight / 2 - viewportCenter);
+        return distance < closestDistance ? event : closest;
+      }, events[0]);
+
+      const eventChanged = nextEvent !== activeEvent;
+      if (eventChanged) {
+        activeEvent?.classList.remove("is-active");
+        activeEvent = nextEvent;
+        activeEvent.classList.add("is-active");
+      }
+      const activeIndex = events.indexOf(activeEvent);
+      events.forEach((event, index) => event.classList.toggle("is-passed", index <= activeIndex));
+      const node = activeEvent.querySelector(".history-timeline__node");
+      const y = node.getBoundingClientRect().top + node.offsetHeight / 2 - timelineBounds.top - traveler.offsetHeight / 2;
+      traveler.style.top = `${y}px`;
+      const lineTop = Number.parseFloat(getComputedStyle(timeline).getPropertyValue("--timeline-line-top"));
+      timeline.style.setProperty("--timeline-progress", `${Math.max(0, y + traveler.offsetHeight / 2 - lineTop)}px`);
+      if (!eventChanged || reduceMotion) return;
+      traveler.classList.remove("is-jumping");
+      requestAnimationFrame(() => traveler.classList.add("is-jumping"));
+    };
+
+    const scheduleUpdate = () => {
+      if (!frame) frame = requestAnimationFrame(updateTraveler);
+    };
+
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+    scheduleUpdate();
+  })();
+</script>
 {% endblock %}

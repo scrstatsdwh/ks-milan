@@ -8,6 +8,7 @@ from .models import (
     Fixture,
     FixturesPage,
     HomePage,
+    HistoryPage,
     NewsIndexPage,
     NewsPage,
     Player,
@@ -38,6 +39,35 @@ class ClubPageTests(TestCase):
         response = self.client.get("/cms/login/")
 
         self.assertEqual(response.status_code, 200)
+
+    def test_history_motto_keeps_accessible_text_and_animated_letters(self):
+        history_page = self.home.add_child(
+            instance=HistoryPage(
+                title="Historia",
+                slug="historia",
+                story="<p>Pełna notatka historyczna.</p>",
+            )
+        )
+        history_page.save_revision().publish()
+
+        response = self.client.get("/historia/")
+
+        self.assertContains(
+            response,
+            '<span class="visually-hidden">Klub. Miasto. Wspólna pasja.</span>',
+            html=True,
+        )
+        self.assertContains(response, 'class="article-aside__letter"')
+        self.assertContains(response, 'aria-label="Historia KS Milan w porządku chronologicznym"')
+        self.assertContains(response, "Sezon 1992/93")
+        self.assertContains(response, "Grudzień 2009")
+        self.assertContains(response, 'class="history-timeline__card"')
+        self.assertContains(response, "is-active is-passed")
+        self.assertContains(response, 'club/images/milan-timeline-ball.svg')
+        self.assertNotContains(response, '<img src="/static/club/images/milan.svg" alt="">')
+        self.assertContains(response, "Przeczytaj pełny opis historii")
+        self.assertContains(response, "Pełna notatka historyczna.")
+        self.assertEqual(response.content.count(b'data-timeline-event>'), 14)
 
     def test_roster_page_lists_active_players(self):
         roster_page = self.home.add_child(
