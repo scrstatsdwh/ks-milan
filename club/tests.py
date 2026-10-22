@@ -46,6 +46,11 @@ class ClubPageTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
+    def test_static_assets_use_absolute_urls(self):
+        response = self.client.get("/")
+
+        self.assertContains(response, 'href="/static/club/css/site.css"')
+
     def test_history_motto_keeps_accessible_text_and_animated_letters(self):
         history_page = self.home.add_child(
             instance=HistoryPage(
