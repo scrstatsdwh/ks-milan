@@ -67,18 +67,20 @@ klucza w środowisku publicznym. W trybie produkcyjnym aplikacja wymusza HTTPS i
 bezpieczne ciasteczka; jeśli dostawca kończy TLS na reverse proxy, skonfiguruj
 zaufane przekazywanie informacji o HTTPS zgodnie z dokumentacją hostingu.
 
-Przykładowa komenda startowa dla hostingu uruchamiającego aplikację przez
-Gunicorn:
+Start Command w ustawieniach usługi Render ustaw na:
 
-```sh
-python manage.py migrate && python manage.py bootstrap_site && python manage.py create_test_user && gunicorn ksmilan.wsgi:application --bind 0.0.0.0:${PORT:-8000}
+```text
+sh start.sh
 ```
 
-Migracje i `bootstrap_site` przygotowują bazę, stronę główną oraz domyślną
-witrynę Wagtail. Poza debug mode tworzenie konta testowego jest pomijane.
-W produkcji nie ustawiaj `CREATE_TEST_USER`; jeśli włączysz je świadomie,
-ustaw również własne, silne `TEST_CMS_PASSWORD`. Hasło nie jest wtedy wypisywane
-do logów. Nie używaj lokalnego hasła testowego w publicznym wdrożeniu.
+Skrypt `start.sh` wykonuje migracje, przygotowuje stronę główną i domyślną
+witrynę Wagtail, uruchamia zabezpieczoną komendę tworzenia użytkownika
+testowego, a następnie startuje Gunicorn na porcie udostępnionym przez hosting.
+W Build Command pozostaw `pip install -r requirements.txt`. Poza debug mode
+tworzenie testowego użytkownika jest pomijane. W produkcji nie ustawiaj
+`CREATE_TEST_USER`; jeśli włączysz je świadomie, ustaw własne, silne
+`TEST_CMS_PASSWORD`. Hasło nie jest wtedy wypisywane do logów. Nie używaj
+lokalnego hasła testowego w publicznym wdrożeniu.
 
 Ustaw `DJANGO_SECURE_HSTS_SECONDS` dopiero po potwierdzeniu, że cała domena
 działa wyłącznie przez HTTPS. HSTS nie jest włączony automatycznie, ponieważ
