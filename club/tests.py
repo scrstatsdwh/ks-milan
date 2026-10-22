@@ -1,6 +1,12 @@
 from datetime import timedelta
+from io import StringIO
+import os
+from unittest.mock import patch
 
+from django.contrib.auth import get_user_model
+from django.core.management import CommandError, call_command
 from django.test import TestCase
+from django.test.utils import override_settings
 from django.utils import timezone
 from wagtail.models import Page, Site
 
@@ -135,3 +141,129 @@ class ClubPageTests(TestCase):
 
         self.assertContains(response, "Klubowy trening")
         self.assertContains(response, "Do zobaczenia na boisku.")
+
+
+class BootstrapCommandTests(TestCase):
+    def test_bootstrap_site_creates_homepage_and_default_site_idempotently(self):
+        output = StringIO()
+        Site.objects.all().delete()
+
+        call_command("bootstrap_site", stdout=output)
+        call_command("bootstrap_site", stdout=output)
+
+        root = Page.get_first_root_node()
+        homepage = HomePage.objects.get(slug="ks-milan", path__startswith=root.path)
+        site = Site.objects.get(is_default_site=True)
+        self.assertTrue(homepage.live)
+        self.assertEqual(site.root_page_id, homepage.pk)
+        self.assertEqual(HomePage.objects.filter(slug="ks-milan").count(), 1)
+
+
+class CreateTestUserCommandTests(TestCase):
+    def test_creates_local_superuser_and_is_idempotent(self):
+        output = StringIO()
+
+        with override_settings(DEBUG=True), patch.dict(
+            os.environ,
+            {
+                "CREATE_TEST_USER": "false",
+                "TEST_CMS_USERNAME": "testadmin",
+                "TEST_CMS_EMAIL": "admin@example.com",
+                "TEST_CMS_PASSWORD": "Admin123!",
+            },
+        ):
+            call_command("create_test_user", stdout=output)
+            user = get_user_model().objects.get(username="testadmin")
+            self.assertTrue(user.is_staff)
+            self.assertTrue(user.is_superuser)
+            self.assertTrue(user.check_password("Admin123!"))
+            self.assertIn("testadmin / Admin123!", output.getvalue())
+            self.assertTrue(self.client.login(username="testadmin", password="Admin123!"))
+            self.assertEqual(self.client.get("/cms/").status_code, 200)
+
+            user.set_password("keep-this-password")
+            user.save(update_fields=["password"])
+            call_command("create_test_user", stdout=StringIO())
+            user.refresh_from_db()
+            self.assertTrue(user.check_password("keep-this-password"))
+
+    def test_skips_creation_outside_debug_without_explicit_opt_in(self):
+        with (
+            override_settings(DEBUG=False),
+            patch.dict(os.environ, {"CREATE_TEST_USER": "false"}, clear=False),
+        ):
+            output = StringIO()
+            call_command("create_test_user", stdout=output)
+
+        self.assertFalse(get_user_model().objects.filter(username="admin").exists())
+        self.assertIn("skipped", output.getvalue())
+        self.assertNotIn("Admin123!", output.getvalue())
+
+    def test_production_opt_in_requires_custom_password_and_never_logs_it(self):
+        with (
+            override_settings(DEBUG=False),
+            patch.dict(
+                os.environ,
+                {
+                    "CREATE_TEST_USER": "true",
+                    "TEST_CMS_USERNAME": "testadmin",
+                },
+                clear=False,
+            ),
+        ):
+            os.environ.pop("TEST_CMS_PASSWORD", None)
+            with self.assertRaisesMessage(CommandError, "TEST_CMS_PASSWORD"):
+                call_command("create_test_user", stdout=StringIO())
+
+        secret = "unique-production-test-password"
+        output = StringIO()
+        with (
+            override_settings(DEBUG=False),
+            patch.dict(
+                os.environ,
+                {
+                    "CREATE_TEST_USER": "true",
+                    "TEST_CMS_USERNAME": "testadmin",
+                    "TEST_CMS_PASSWORD": secret,
+                },
+                clear=False,
+            ),
+        ):
+            call_command("create_test_user", stdout=output)
+
+        user = get_user_model().objects.get(username="testadmin")
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.check_password(secret))
+        self.assertNotIn(secret, output.getvalue())
+        self.assertNotIn("Admin123!", output.getvalue())
+
+    def test_update_existing_only_changes_credentials_when_requested(self):
+        user_model = get_user_model()
+        user = user_model.objects.create_user(
+            username="admin",
+            email="old@example.com",
+            password="original-password",
+        )
+        output = StringIO()
+
+        with override_settings(DEBUG=True), patch.dict(
+            os.environ,
+            {
+                "CREATE_TEST_USER": "false",
+                "TEST_CMS_EMAIL": "admin@example.com",
+                "TEST_CMS_PASSWORD": "Admin123!",
+            },
+        ):
+            call_command("create_test_user", stdout=output)
+            user.refresh_from_db()
+            self.assertEqual(user.email, "old@example.com")
+            self.assertTrue(user.check_password("original-password"))
+            self.assertNotIn("Admin123!", output.getvalue())
+
+            call_command("create_test_user", "--update-existing", stdout=StringIO())
+            user.refresh_from_db()
+
+        self.assertEqual(user.email, "admin@example.com")
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.check_password("Admin123!"))

@@ -19,7 +19,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         root = Page.get_first_root_node()
-        homepage = HomePage.objects.first()
+        homepage = HomePage.objects.child_of(root).first()
         if homepage is None:
             homepage = root.add_child(
                 instance=HomePage(
@@ -29,20 +29,21 @@ class Command(BaseCommand):
                 )
             )
             homepage.save_revision().publish()
+        elif not homepage.live:
+            homepage.save_revision().publish()
 
         default_site = Site.objects.filter(is_default_site=True).first()
-        site, _ = Site.objects.update_or_create(
+        if default_site is None:
+            default_site = Site.objects.order_by("pk").first()
+        Site.objects.update_or_create(
             hostname=default_site.hostname if default_site else "localhost",
+            port=default_site.port if default_site else 8000,
             defaults={
-                "port": default_site.port if default_site else 8000,
                 "root_page": homepage,
                 "is_default_site": True,
                 "site_name": "KS Milan",
             },
         )
-        if default_site and default_site.pk != site.pk:
-            default_site.is_default_site = False
-            default_site.save(update_fields=["is_default_site"])
 
         child_pages = (
             (HistoryPage, "Historia", "historia"),
@@ -50,9 +51,12 @@ class Command(BaseCommand):
             (FixturesPage, "Terminarz", "terminarz"),
             (NewsIndexPage, "Aktualności", "aktualnosci"),
         )
+
         for page_type, title, slug in child_pages:
-            if not page_type.objects.child_of(homepage).exists():
+            page = page_type.objects.child_of(homepage).first()
+            if page is None:
                 page = homepage.add_child(instance=page_type(title=title, slug=slug))
+            if not page.live:
                 page.save_revision().publish()
 
         for group_name in ("Editors", "Moderators"):

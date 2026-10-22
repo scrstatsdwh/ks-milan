@@ -19,13 +19,24 @@ python -m pip install -r requirements.txt
 Copy-Item .env.example .env
 python manage.py migrate
 python manage.py bootstrap_site
-python manage.py createsuperuser
+python manage.py create_test_user
 python manage.py runserver
 ```
 
 Strona: <http://127.0.0.1:8000/>
 
 Panel redakcyjny: <http://127.0.0.1:8000/cms/>
+
+W lokalnym trybie (`DJANGO_DEBUG=True`) komenda tworzy konto administratora CMS,
+jeśli jeszcze nie istnieje:
+
+- login: `admin`
+- email: `admin@example.com`
+- hasło: `Admin123!`
+
+Zmienne `TEST_CMS_USERNAME`, `TEST_CMS_EMAIL` i `TEST_CMS_PASSWORD` pozwalają
+zmienić te dane. Istniejące konto nie jest nadpisywane; aby świadomie zresetować
+je, uruchom `python manage.py create_test_user --update-existing`.
 
 Jeśli PowerShell blokuje aktywację venv, uruchom polecenia przez
 `.\.venv\Scripts\python.exe` zamiast aktywować środowisko.
@@ -55,6 +66,19 @@ wdrożeniem ustaw własny, losowy `DJANGO_SECRET_KEY` (co najmniej 50 znaków),
 klucza w środowisku publicznym. W trybie produkcyjnym aplikacja wymusza HTTPS i
 bezpieczne ciasteczka; jeśli dostawca kończy TLS na reverse proxy, skonfiguruj
 zaufane przekazywanie informacji o HTTPS zgodnie z dokumentacją hostingu.
+
+Przykładowa komenda startowa dla hostingu uruchamiającego aplikację przez
+Gunicorn:
+
+```sh
+python manage.py migrate && python manage.py bootstrap_site && python manage.py create_test_user && gunicorn ksmilan.wsgi:application --bind 0.0.0.0:${PORT:-8000}
+```
+
+Migracje i `bootstrap_site` przygotowują bazę, stronę główną oraz domyślną
+witrynę Wagtail. Poza debug mode tworzenie konta testowego jest pomijane.
+W produkcji nie ustawiaj `CREATE_TEST_USER`; jeśli włączysz je świadomie,
+ustaw również własne, silne `TEST_CMS_PASSWORD`. Hasło nie jest wtedy wypisywane
+do logów. Nie używaj lokalnego hasła testowego w publicznym wdrożeniu.
 
 Ustaw `DJANGO_SECURE_HSTS_SECONDS` dopiero po potwierdzeniu, że cała domena
 działa wyłącznie przez HTTPS. HSTS nie jest włączony automatycznie, ponieważ
